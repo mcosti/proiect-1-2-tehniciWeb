@@ -1,0 +1,119 @@
+@import url(https://fonts.googleapis.com/css?family=Oswald:400,700);
+
+//Color Pallete
+$color1: #F4F4F4;
+$color2: #373737;
+$color3: #C0B283;
+
+// Base Styles
+body {
+  background-color: $color1;
+  color: $color2;
+  font-family: 'Oswald', sans-serif;
+  line-height: 2em;
+}
+
+
+.navBar {
+  background-color: $color2;
+  position: fixed;
+  min-width: 100%;
+}
+
+.logo {
+  background-color: $color1;
+  border-radius: 50px;
+  display: inline-block;
+  height: 45px;
+  margin: 1em 0;
+  width: 45px;
+}
+
+// Content Wrapper
+.wrapper {
+  margin: 0 auto;
+  max-width: 960px;
+}
+
+
+nav {
+  ul {
+    display: flex;
+    justify-content: space-between;
+    list-style-type: none;
+    width: 50%;
+    padding: 0;
+
+    a {
+      color: $color1;
+      text-decoration: none;
+      transition: all .5s ease;
+      padding: 20px;
+
+      &:hover {color: $color3;}
+    }
+  }
+
+  li  {
+    display: inline-block;
+  }
+
+  #menu-toggle {display: none;}
+
+  .label-toggle {display: none;}
+
+  .wrapper {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  @include respond-to(xs) {
+    nav {
+      ul {
+        a {
+          color: $color2;
+        }
+      }
+    }
+    ul {
+      background-color: $color1;
+      display: block;
+      height: 0;
+      list-style-type: none;
+      opacity: 0;
+      text-align: center;
+      transition: all 1s ease;
+      width: 100%;
+      visibility: hidden;
+
+    }
+
+    li {
+      border-bottom: 2px solid $color2;
+      color: $color2;
+      display: block;
+      font-size: 1.5em;
+      padding: 2em 0;
+    }
+
+    #menu-toggle:checked ~ ul {
+      opacity: 1;
+      height: 100vh;
+      visibility: visible;
+    }
+
+    .label-toggle {
+      background: linear-gradient(to bottom, $color1 0%, $color1 20%, transparent 20%, transparent 40%, $color1 40%, $color1 60%, transparent 60%, transparent 80%, $color1 80%, $color1 100%); //Gradient Hamburger
+      cursor: pointer;
+      display: block;
+      float: right;
+      height: 35px;
+      margin-top: 1em;
+      width: 35px;
+      margin-right: 10px;
+    }
+
+    .wrapper {display: block;}
+  }
+}
