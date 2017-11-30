@@ -4,17 +4,21 @@
 document.addEventListener('DOMContentLoaded', main);
 var api = 'https://www.mihaicosti.ro/blog/wp-json/wp/v2';
 var posts = [];
-var postsDom = [];
+var curr_page = 1;
+var per_page = 5;
 
 
 function main() {
 
 
-    getPosts(1);
-    setTimeout(function() {
-        createPostsDom();
-    }, 1000); // poor man's async
+    getPosts(curr_page); // first call of the page;
 
+
+
+    document.querySelectorAll('.changePage').forEach(function(e) {
+        e.addEventListener('click', function() {changePage(e.getAttribute('data-increment'))}, true);
+    });
+    document.getElementsByClassName('to-top')[0].addEventListener('click', scrollToTop);
 
 
 }
@@ -30,6 +34,8 @@ function Post(id, title, link, image, content, date) {
 
 
 function getJSON(url, callback) {
+    var loader = document.getElementsByClassName('loader')[0];
+    loader.style.display = 'block';
     var request = new XMLHttpRequest();
     request.open('GET', url, true);
 
@@ -40,7 +46,8 @@ function getJSON(url, callback) {
 
             if (request.status === 200) {
                 data = JSON.parse(request.responseText);
-                callback(data);
+                loader.style.display = 'none';
+                callback(data); // what function to be called when the query is done
             } else {
                 console.error(request.statusText);
             }
@@ -51,7 +58,7 @@ function getJSON(url, callback) {
 }
 
 function getPosts(page) {
-    getJSON(api + '/posts/?orderby=date', parsePosts);
+    getJSON(api + '/posts/?per_page=' + per_page + '&page=' + page, parsePosts);
 }
 
 
@@ -64,10 +71,19 @@ function parsePosts(postsObj) {
         var post = new Post(postsObj[i].id, postsObj[i].title.rendered, postsObj[i].link, postImage, postsObj[i].content.rendered, postsObj[i].date);
         posts[post.id] = post;
     }
+
+    createPostsDom();
+    document.querySelectorAll('.article-loader').forEach(function(e) {
+        e.remove();
+    })
 }
 
 function createPostsDom() {
+    var articlesContainer = document.getElementsByClassName('grid-articles')[0];
+    articlesContainer.innerHTML = ''; // empty the container for change pages;
     for(i in posts) {
+
+        // everything here is pretty self-explanatory
         var post = posts[i];
         var
             articleContainer = document.createElement('div'),
@@ -103,7 +119,7 @@ function createPostsDom() {
         // Article Content Construction
 
 
-        articleContentContainer.setAttribute('class', 'article-content')
+        articleContentContainer.setAttribute('class', 'article-content');
         articleContentContainer.innerHTML = post.content;
 
 
@@ -111,7 +127,7 @@ function createPostsDom() {
         // Post details Construction
 
         articleDetailsContainer.setAttribute('class', 'article-details');
-        articleDetails.appendChild(document.createTextNode('Publicat la ' + new Date(post.date)))
+        articleDetails.appendChild(document.createTextNode('Publicat la ' + new Date(post.date)));
         articleDetailsContainer.appendChild(articleDetails);
 
 
@@ -124,20 +140,71 @@ function createPostsDom() {
 
 
         // Adding the article to the dom
-
-        document.getElementsByClassName('grid-articles')[0].appendChild(articleContainer);
-
+        articlesContainer.insertBefore(articleContainer, articlesContainer.firstChild); // for proper ordering
 
 
-
+        unfade(articleContainer); //just animation for fade in
     }
+
+    posts = []; // empty the variable
 }
 
 
-function decodeEntities(encodedString) {
+function changePage(increment) {
+    increment = parseInt(increment);
+    curr_page += increment;
+    //TODO store the data so it doesn't make a call every time when going to a previously seen page
+
+    var prevButton = document.getElementsByClassName('prev-page')[0];
+
+    if(curr_page == 1) {
+        prevButton.setAttribute('disabled', ''); //making sure that the user doesn't try to access 0 or negative pages
+    }
+    else {
+        prevButton.removeAttribute('disabled');
+        //TODO should figure out the number of pages from the API so the next button can be disabled as well
+    }
+    if(curr_page >= 1) { // in case the user removed the disabled attribute
+        getPosts(curr_page);
+        document.getElementsByClassName('page')[0].innerHTML = 'Pagina: ' + curr_page;
+    }
+
+
+
+
+}
+
+
+
+
+
+
+function decodeEntities(encodedString) { //transforming sql stored characters into 'normal' characters
     var textArea = document.createElement('textarea');
     textArea.innerHTML = encodedString;
     return textArea.value;
+}
+
+function unfade(element) {
+    var op = 0.1;  // initial opacity
+    element.style.display = 'grid';
+    var timer = setInterval(function () {
+        if (op >= 1){
+            clearInterval(timer);
+        }
+        element.style.opacity = op;
+        element.style.filter = 'alpha(opacity=' + op * 100 + ")";
+        op += op * 0.1;
+    }, 10);
+}
+
+
+function scrollToTop() {
+    window.scroll({
+        behavior: 'smooth',
+        left: 0,
+        top: 0 //bottom
+    });
 }
 
 
