@@ -7,7 +7,7 @@ Proiect 1 & 2 Tehnici Web Mihai Costi
 
 
 
-> [LIVE DEMO](https://www.mihaicosti.ro/tehniciweb/)
+> [LIVE DEMO](https://www.mihaicosti.ro/tehniciweb/){:target="_blank"}
 
 
 ----------
