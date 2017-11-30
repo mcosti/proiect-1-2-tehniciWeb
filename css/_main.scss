@@ -9,3 +9,24 @@
   }
 
 }
+
+.article {
+
+  .article-image {
+    img {
+      max-width: 100%;
+    }
+  }
+
+
+  .article-content {
+
+    script, noscript, embed, .wp-socializer {
+      display: none;
+    }
+
+    .ngg-gallery-thumbnail-box {
+      display: inline-block;
+    }
+  }
+}
